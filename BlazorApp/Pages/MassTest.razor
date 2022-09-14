@@ -1,0 +1,35 @@
+﻿@page "/mass"
+@inject BlazorApp.Data.MassTestService MassTestService
+
+<div>
+    <input id="name" type="text" @bind-value="@Name" placeholder="Enter your message" @oninput="@(e => Result = null)" />
+    <button id="send" type="button" @onclick="@(e => Create())">@(Sending?"Sending":"Send")</button>
+    <p>@Result</p>
+</div>
+
+@code {
+    private string Name { get; set; } = null!;
+
+    private string? Result { get; set; }
+
+    private bool Sending { get; set; }
+
+    private async Task Create()
+    {
+        if (Sending)
+        {
+            Result = "Please wait, the previous message is being sent.";
+            return;
+        }
+        if (string.IsNullOrEmpty(Name))
+        {
+            Result = "Please Enter your message.";
+            return;
+        }
+        Result = null;
+        Sending = true;
+        await MassTestService.Create(Name);
+        Result = "Your message has been sent. To see the problem, please send another message without reloading the page. If the page is reloaded, the second message will be sent correctly.";
+        Sending = false;
+    }
+}
